@@ -1,8 +1,7 @@
-FROM debian:jessie
+FROM alpine:latest
 
 RUN echo "Installing dependancies" \
-    && apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y tor
+    && apk add --no-cache bash tor
 
 ENV  KBS=500
 
@@ -30,10 +29,10 @@ RUN echo "Configuring tor" && \
 
 RUN mkdir -p /var/lib/tor/.arm && echo "queries.useProc false" >> /var/lib/tor/.arm/armrc
 
-RUN echo "Allowing tor port access" && \
-    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
+#RUN echo "Allowing tor port access" && \
+#    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
 
-RUN useradd -ms /bin/bash anon && \
+RUN adduser -D -u 1000 anon && \
     chown -R anon:anon /etc/tor && \
     mkdir -p /etc/tor/run && \
     chown -Rh anon:anon /var/lib/tor /etc/tor/run && \
