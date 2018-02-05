@@ -2,6 +2,7 @@
 
 exec docker run -it\
     --rm \
+    -p 9001:9001 \
     torrelay
 
     #--shm-size 2g \

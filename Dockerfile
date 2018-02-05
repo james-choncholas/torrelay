@@ -29,16 +29,15 @@ RUN echo "Configuring tor" && \
 
 RUN mkdir -p /var/lib/tor/.arm && echo "queries.useProc false" >> /var/lib/tor/.arm/armrc
 
-#RUN echo "Allowing tor port access" && \
-#    setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/tor
-
 RUN adduser -D -u 1000 anon && \
     chown -R anon:anon /etc/tor && \
     mkdir -p /etc/tor/run && \
     chown -Rh anon:anon /var/lib/tor /etc/tor/run && \
     chmod 0750 /etc/tor/run
 
-EXPOSE 9001
+# no need to EXPOSE port. Container must be started with -p 9001:9001
+# to make the port public which implicitly EXPOSES the port to other 
+# docker containers.
 
 RUN echo "tor -f /etc/tor/torrc" >> /home/anon/.bashrc
 
