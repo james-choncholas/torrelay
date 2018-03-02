@@ -1,6 +1,7 @@
 FROM alpine:latest
 
 RUN echo "Installing dependancies" \
+    && apk update \
     && apk add --no-cache bash tor
 
 ENV  KBS=500
@@ -39,7 +40,7 @@ RUN adduser -D -u 1000 anon && \
 # to make the port public which implicitly EXPOSES the port to other 
 # docker containers.
 
-RUN echo "tor -f /etc/tor/torrc" >> /home/anon/.bashrc
+RUN echo "tor -f /etc/tor/torrc &" >> /home/anon/.bashrc
 
 USER anon
 WORKDIR /home/anon
