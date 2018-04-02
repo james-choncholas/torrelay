@@ -29,10 +29,13 @@ RUN echo "Configuring tor" && \
 #    echo "ControlSocketsGroupWritable 1" >> /etc/tor/torrc && \
 #    echo "ControlPort 9051" >> /etc/tor/torrc && \
 
-RUN echo "Set up nyx" && \
-    pip install stem && \
-    git clone ${NYX_REPO} /usr/lib/nyx && \
-    ln -sf /usr/lib/nyx/run_nyx /usr/bin/nyx
+# To use NYX (aka arm)
+#RUN echo "Set up nyx" && \
+#    pip install stem && \
+#    git clone ${NYX_REPO} /usr/lib/nyx && \
+#    ln -sf /usr/lib/nyx/run_nyx /usr/bin/nyx
+#RUN echo "tor -f /etc/tor/torrc &" >> /home/anon/.bashrc
+#ENTRYPOINT ["/bin/bash"]
 
 RUN adduser -D -u 1000 anon && \
     chown -R anon:anon /etc/tor && \
@@ -44,8 +47,6 @@ RUN adduser -D -u 1000 anon && \
 # to make the port public which implicitly EXPOSES the port to other 
 # docker containers.
 
-RUN echo "tor -f /etc/tor/torrc &" >> /home/anon/.bashrc
-
 USER anon
 WORKDIR /home/anon
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/usr/bin/tor","-f /etc/tor/torrc"]
