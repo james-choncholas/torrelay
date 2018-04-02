@@ -49,4 +49,4 @@ RUN adduser -D -u 1000 anon && \
 
 USER anon
 WORKDIR /home/anon
-ENTRYPOINT ["/usr/bin/tor","-f /etc/tor/torrc"]
+ENTRYPOINT ["/usr/bin/tor"]
