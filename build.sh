@@ -1,3 +1,3 @@
-docker build \
+sudo docker build \
     -t torrelay \
     .
