@@ -16,6 +16,7 @@ if [ ! "$(sudo docker ps -q -f name=torrelay)" ]; then
     sudo docker run -it \
         --rm \
         --name torrelay \
+        --env TZ=CST6CDT \
         -p 9001:9001 \
         $RUN_AS_DAEMON \
         torrelay $@
@@ -27,17 +28,17 @@ while true; do
     read -p "Attach to container? [y/n] : " yn
     case $yn in
         [Yy]* )
-			print_info "\n\nDetach from container with <C-p> <C-q>"
+            print_info "\n\nDetach from container with <C-p> <C-q>"
 
-			secs=$((4))
-			while [ $secs -gt 0 ]; do
-			   echo -ne "starting in : $secs\033[0K\r"
-			   sleep 1
-			   : $((secs--))
-			done
+            secs=$((4))
+            while [ $secs -gt 0 ]; do
+               echo -ne "starting in : $secs\033[0K\r"
+               sleep 1
+               : $((secs--))
+            done
 
-			sudo docker attach torrelay
-			break;;
+            sudo docker attach torrelay
+            break;;
         [Nn]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac
