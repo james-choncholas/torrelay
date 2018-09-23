@@ -1,28 +1,45 @@
 #!/bin/bash
 
-### timezone: Set the timezone for the container
-# Arguments:
-#   timezone) for example EST5EDT
-# Return: the correct zoneinfo file will be symlinked into place
-timezone() { local timezone="${1:-EST5EDT}"
-    if [[ -w /etc/timezone && $(cat /etc/timezone) != $timezone ]]; then
-        echo "$timezone" >/etc/timezone
-        ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
-        dpkg-reconfigure -f noninteractive tzdata >/dev/null 2>&1
-    fi
+print_info() {
+  echo -e "\033[33m$1\033[0m"
 }
 
+# check if a vpn container using TCP (for tor) exists
+if [ ! "$(sudo docker ps -q -f name=torrelay)" ]; then
 
-[[ "${TZ:-""}" ]] && timezone $TZ
+    # only run as daemon if no extra arguments given
+    RUN_AS_DAEMON="-d"
+    if [[ $# -ge 1 ]]; then
+        RUN_AS_DAEMON=""
+    fi
 
-
-if [[ $# -ge 1 && -x $(which $1 2>&-) ]]; then
-    exec "$@"
-elif [[ $# -ge 1 ]]; then
-    echo "ERROR: command not found: $1"
-    exit 13
+    sudo docker run -it \
+        --rm \
+        --name torrelay \
+        --env TZ=CST6CDT \
+        -p 9001:9001 \
+        $RUN_AS_DAEMON \
+        torrelay $@
 else
-    echo "Log file at /home/anon/tor.log"
-    /usr/bin/tor > /home/anon/tor.log &
-    nyx
+    echo "torrelay already running"
 fi
+
+while true; do
+    read -p "Attach to container? [y/n] : " yn
+    case $yn in
+        [Yy]* )
+            print_info "\n\nDetach from container with <C-p> <C-q>"
+
+            secs=$((4))
+            while [ $secs -gt 0 ]; do
+               echo -ne "starting in : $secs\033[0K\r"
+               sleep 1
+               : $((secs--))
+            done
+
+            sudo docker attach torrelay
+            break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done

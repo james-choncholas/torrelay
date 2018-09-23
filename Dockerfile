@@ -30,7 +30,7 @@ RUN echo "Configuring tor" && \
     echo "ControlSocket /etc/tor/run/control" >> /etc/tor/torrc && \
     echo "ControlSocketsGroupWritable 1" >> /etc/tor/torrc && \
     echo "ControlPort 9051" >> /etc/tor/torrc && \
-    echo "Nickname bitcoinbaby" >> /etc/tor/torrc
+    echo "Nickname bbgnwld" >> /etc/tor/torrc
 #    echo "AutomapHostsOnResolve 1" >>/etc/tor/torrc && \
 #    echo "VirtualAddrNetworkIPv4 10.192.0.0/10" >>/etc/tor/torrc && \
 #    echo "DNSPort 5353" >>/etc/tor/torrc && \
@@ -39,7 +39,7 @@ RUN echo "Configuring tor" && \
 
 # To use NYX (aka arm)
 RUN echo "Set up nyx" && \
-    pip install --upgrade pip && \
+    python -m pip install --upgrade pip && \
     pip install --upgrade virtualenv && \
     pip install stem && \
     git clone ${NYX_REPO} /usr/lib/nyx && \
@@ -52,10 +52,10 @@ RUN useradd -ms /bin/bash anon && \
     rm -rf /tmp/*
 
 # no need to EXPOSE port. Container must be started with -p 9001:9001
-# to make the port public which implicitly EXPOSES the port to other 
+# to make the port public which implicitly EXPOSES the port to other
 # docker containers.
 
 VOLUME ["/etc/tor", "/var/lib/tor"]
 
-COPY torrelay.sh /usr/bin/
-ENTRYPOINT ["torrelay.sh"]
+COPY docker-entrypoint.sh /usr/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
